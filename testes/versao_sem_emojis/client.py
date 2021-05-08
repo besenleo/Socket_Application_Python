@@ -9,22 +9,8 @@ from tkinter import simpledialog
 
 HEADER_LENGTH = 10
 
-# Variaveis de conexão
-IP = "127.0.0.1" 
+IP = "127.0.0.1" # IP de LoopBack, pois estamos fazendo uma aplicação local
 PORTA = 65432
-# Variavel para manter track da sessao
-timeout_id = None
-# Dicionario de emojis
-DICT_EMOJI = {
-    ':)' : '\U0001F642',
-    ':D' : '\U0001F601',
-    ':-D': '\U0001F601',
-    ':(' : '\U0001F641',
-    ';(' : '\U0001F622',
-    ':O' : '\U0001F631',
-    ':o' : '\U0001F62F',
-    ':P' : '\U0001F61B'
-}
 
 class Client:
 
@@ -60,7 +46,7 @@ class Client:
 
     def gui_loop(self):
         """
-        Função responsável pelos elementos visuais do programa que serão rodados na gui_thread
+            Essa função define os elementos visuais do programa que serão rodados na gui_thread
         """
         self.janela = tkinter.Tk()
         self.janela.configure(bg="lightgray")
@@ -87,18 +73,11 @@ class Client:
 
         self.gui_done = True # A GUI esta pronta
 
-        # Toda vez que o usuario pressionar uma tecla ou botao reiniciamos o timeout timer
-        self.janela.bind_all("<Any-KeyPress>", self.resetar_timer)
-        self.janela.bind_all("<Any-ButtonPress>", self.resetar_timer)
-
         self.janela.protocol("WM_DELETE_WINDOW", self.parar) # Quando a janela é fechada o programa deverá para a execução
 
         self.janela.mainloop()
 
     def envia_mensagem(self):
-        """
-        Função responsável por enviar mensagens para servidor 
-        """
         mensagem = self.area_input.get('1.0', 'end')
         if mensagem:
             mensagem = mensagem.encode('utf-8')
@@ -107,9 +86,6 @@ class Client:
         self.area_input.delete('1.0', 'end')
 
     def recebe_mensagem(self):
-        """
-        Função responsável por receber e mostrar as mensagens recebidas pelo servidor 
-        """
         while self.rodando:
             # Tentamos ler as mensagem recebidas
             try:
@@ -130,10 +106,6 @@ class Client:
                 mensagem = self.cliente_socket.recv(tamanho_mensagem).decode('utf-8')
                 
                 if self.gui_done:
-                    # Detecta emojis e mostra a figura para o usuario
-                    for emoji, valor_unicode in DICT_EMOJI.items():
-                        if emoji in mensagem:
-                            mensagem = mensagem.replace(emoji, valor_unicode)
                     texto = f'{usuario} > {mensagem}'
                     self.area_texto.config(state='normal')
                     self.area_texto.insert('end', texto)
@@ -154,31 +126,14 @@ class Client:
                 self.cliente_socket.close()
                 sys.exit()
     
-    def parar(self, inatividade=None):
+    def parar(self):
         """
-        Função responsável por parar a execução do programa
+        Função responsavel por parar a execução do programa
         """
         self.rodando = False
         self.janela.destroy()
         self.cliente_socket.close()
-        if inatividade:
-            print("Sessão expirada por inatividade!")
         exit(0)
 
-    def resetar_timer(self, event=None):
-        """
-        Função responsável por redefinir o timeout timer quando o usuario tomar uma ação
-        """
-        global timeout_id
-        if timeout_id is not None:
-            self.janela.after_cancel(timeout_id)
-        timeout_id = self.janela.after(600000, self.encerrar_sessao) # Faz o timeout depois de 10 minutos
-    
-    def encerrar_sessao(self):
-        """
-        Função responsável por encerrar program por inatividade
-        """
-        self.parar(inatividade=True)    
-        
-
+# Instancia nossa classe
 client = Client(IP, PORTA)
