@@ -172,7 +172,7 @@ class Client:
         global timeout_id
         if timeout_id is not None:
             self.janela.after_cancel(timeout_id)
-        timeout_id = self.janela.after(600000, self.encerrar_sessao) # Faz o timeout depois de 10 minutos
+        timeout_id = self.janela.after(86400000, self.encerrar_sessao) # Faz o timeout depois de 10 minutos
     
     def encerrar_sessao(self):
         """
