@@ -60,7 +60,6 @@ def broadcast(mensagem, socket):
     print(f'Messagem recebida de {usuario["data"].decode("utf-8")}: {mensagem["data"].decode("utf-8")}')
     # Manda a mensagem recebida para todos os demais clientes
     for cliente in clientes:
-        #if cliente != socket:
         cliente.send(usuario['header'] + usuario['data'] + mensagem['header'] + mensagem['data'])
 
 def aceita_conexao():
@@ -95,8 +94,6 @@ while True:
         # Caso o socket notificado seja o socket usado para o servidor, isso significa que um novo cliente deseja conectar
         if socket == server_socket:
             aceita_conexao()
-            # mensagem_bem_vindo = f"{usuario['data'].decode('utf-8')} entrou no chat!"
-            # broadcast(mensagem_bem_vindo, cliente_socket)
 
         # Caso contrario, o socket ja esta conectado e esta mandando uma mensagem
         else:
